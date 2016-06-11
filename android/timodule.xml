@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ti:module xmlns:ti="http://ti.appcelerator.org" xmlns:android="http://schemas.android.com/apk/res/android">
+	<!--
+		Similar to tiapp.xml, but contains module/platform specific
+		configuration in <iphone>, <android>, and <mobileweb> sections
+	-->
+	<iphone>
+	</iphone>
+	<android xmlns:android="http://schemas.android.com/apk/res/android">
+		<manifest>
+			<meta-data android:name="com.facebook.sdk.ApplicationId"
+           android:value="@string/app_id" />
+<meta-data android:name="com.facebook.accountkit.ClientToken"
+           android:value="@string/ACCOUNT_KIT_CLIENT_TOKEN" />
+<meta-data android:name="com.facebook.accountkit.ApplicationName"
+           android:value="@string/APP_NAME" />
+  
+<activity
+  android:name="com.facebook.accountkit.ui.AccountKitActivity"
+  android:theme="@style/AppLoginTheme"
+  tools:replace="android:theme"/>
+			
+			
+		</manifest>
+		
+	</android>
+	<mobileweb>
+	</mobileweb>
+</ti:module>
