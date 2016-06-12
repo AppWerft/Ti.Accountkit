@@ -1,10 +1,11 @@
 package ti.accountkit;
 
+import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.titanium.TiLifecycle.OnActivityResultEvent;
+import org.appcelerator.titanium.util.TiActivityResultHandler;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,7 +18,7 @@ import com.facebook.accountkit.ui.LoginType;
 
 @Kroll.module(name = "Accountkit", id = "ti.accountkit")
 public class AccountkitModule extends KrollModule implements
-		OnActivityResultEvent {
+		TiActivityResultHandler {
 	public static int APP_REQUEST_CODE = 99;
 	Activity activity;
 	private static final String LCAT = "TiaccountkitModule";
@@ -28,6 +29,7 @@ public class AccountkitModule extends KrollModule implements
 
 	@Kroll.method
 	public void initialize() {
+		activity = TiApplication.getAppRootOrCurrentActivity();
 		AccountKit.initialize(TiApplication.getInstance()
 				.getApplicationContext());
 	}
@@ -49,7 +51,7 @@ public class AccountkitModule extends KrollModule implements
 		// ... perform additional configuration ...
 		intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
 				configurationBuilder.build());
-		activity = TiApplication.getAppRootOrCurrentActivity();
+
 		activity.startActivityForResult(intent, APP_REQUEST_CODE);
 
 	}
@@ -60,49 +62,39 @@ public class AccountkitModule extends KrollModule implements
 				AccountKitActivity.class);
 		AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder = new AccountKitConfiguration.AccountKitConfigurationBuilder(
 				LoginType.EMAIL, AccountKitActivity.ResponseType.CODE); // or
-																		// .ResponseType.TOKEN
-		// ... perform additional configuration ...
 		intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
 				configurationBuilder.build());
 		activity = TiApplication.getAppRootOrCurrentActivity();
 		activity.startActivityForResult(intent, APP_REQUEST_CODE);
-
 	}
 
 	@Override
-	protected void onActivityResult(final int requestCode,
+	public void onError(Activity arg0, int arg1, Exception arg2) {
+	}
+
+	@Override
+	public void onResult(Activity activity, final int requestCode,
 			final int resultCode, final Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == APP_REQUEST_CODE) { // confirm that this response
-												// matches your request
+		if (requestCode == APP_REQUEST_CODE && hasListeners("login")) {
+			KrollDict result = new KrollDict();
+
 			AccountKitLoginResult loginResult = data
 					.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
-			String toastMessage;
 			if (loginResult.getError() != null) {
-				toastMessage = loginResult.getError().getErrorType()
-						.getMessage();
-				showErrorActivity(loginResult.getError());
+				// handling of error
 			} else if (loginResult.wasCancelled()) {
-				toastMessage = "Login Cancelled";
+				// toastMessage = "Login Cancelled";
 			} else {
 				if (loginResult.getAccessToken() != null) {
-
+					result.put("success", true);
+					fireEvent("login", result);
 				} else {
 
 				}
 
-				// If you have an authorization code, retrieve it from
-				// loginResult.getAuthorizationCode()
-				// and pass it to your server and exchange it for an access
-				// token.
-
-				// Success! Start your next activity...
-
 			}
-
-			// Surface the result to your user in an appropriate way.
-
 		}
+		// /
 	}
 
 }
