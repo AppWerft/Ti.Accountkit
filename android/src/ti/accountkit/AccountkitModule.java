@@ -33,6 +33,11 @@ public class AccountkitModule extends KrollModule implements
 	}
 
 	@Kroll.method
+	public void logout() {
+		AccountKit.logOut();
+	}
+
+	@Kroll.method
 	public void initialize() {
 		activity = TiApplication.getAppRootOrCurrentActivity();
 		AccountKit.initialize(TiApplication.getInstance()
