@@ -12,6 +12,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>2
 		<nature>com.appcelerator.titanium.mobile.module.nature</nature>
 	</natures>
 </projectDescription>
