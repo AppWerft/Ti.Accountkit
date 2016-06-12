@@ -20,6 +20,11 @@ import com.facebook.accountkit.ui.LoginType;
 public class AccountkitModule extends KrollModule implements
 		TiActivityResultHandler {
 	public static int APP_REQUEST_CODE = 99;
+	@Kroll.constant
+	public static final int RESPONSE_TYPE_AUTHORIZATION_CODE = 0;
+	@Kroll.constant
+	public static final int RESPONSE_TYPE_AUTHORIZATION_TOKEN = 1;
+
 	Activity activity;
 	private static final String LCAT = "TiaccountkitModule";
 
@@ -81,20 +86,26 @@ public class AccountkitModule extends KrollModule implements
 			AccountKitLoginResult loginResult = data
 					.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
 			if (loginResult.getError() != null) {
+				result.put("success", false);
+				result.put("error", loginResult.getError());
 				// handling of error
 			} else if (loginResult.wasCancelled()) {
 				// toastMessage = "Login Cancelled";
 			} else {
 				if (loginResult.getAccessToken() != null) {
 					result.put("success", true);
-					fireEvent("login", result);
+					result.put("accesstoken", loginResult.getAccessToken()
+							.getAccountId());
+
 				} else {
-
+					result.put("success", true);
+					result.put("code", loginResult.getAuthorizationCode()
+							.substring(0, 10));
 				}
-
 			}
+			fireEvent("login", result);
 		}
-		// /
+
 	}
 
 }

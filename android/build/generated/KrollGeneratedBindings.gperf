@@ -1,0 +1,16 @@
+%define lookup-function-name lookupGeneratedInit
+%define class-name AccountkitBindings
+%{
+
+#include <string.h>
+#include <v8.h>
+#include <KrollBindings.h>
+
+#include "ti.accountkit.AccountkitModule.h"
+
+
+%}
+struct titanium::bindings::BindEntry;
+%%
+ti.accountkit.AccountkitModule, ::ti::accountkit::AccountkitModule::bindProxy, ::ti::accountkit::AccountkitModule::dispose
+%%
