@@ -46,20 +46,20 @@ public class AccountkitModule extends KrollModule implements
 
 	@Kroll.method
 	public void initialize() {
-		/*
-		 * Log.d(LCAT, "start initialize inside krollmethod"); if
-		 * (AccountKit.isInitialized() == false) { Log.d(LCAT,
-		 * "start initialize inside krollmethod after questio n if init");
-		 * activity = TiApplication.getAppRootOrCurrentActivity(); Log.d(LCAT,
-		 * "Kit initialized after question");
-		 * AccountKit.initialize(TiApplication.getInstance()
-		 * .getApplicationContext()); Log.d(LCAT, "isInitialized=" +
-		 * AccountKit.isInitialized()); }
-		 */
+		Log.d(LCAT, "start initialize inside krollmethod");
+		if (AccountKit.isInitialized() == false) {
+			AccountKit.initialize(TiApplication.getInstance()
+					.getApplicationContext());
+			Log.d(LCAT, "isInitialized=" + AccountKit.isInitialized());
+		}
+
 	}
 
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
+		AccountKit.initialize(TiApplication.getInstance()
+				.getApplicationContext());
+		Log.d(LCAT, "isInitialized=" + AccountKit.isInitialized());
 
 	}
 
@@ -93,10 +93,10 @@ public class AccountkitModule extends KrollModule implements
 		if (false == AccountKit.isInitialized()) {
 			AccountKit.initialize(TiApplication.getInstance()
 					.getApplicationContext());
-			// always false ;-(
-			Log.d(LCAT, "isInitialized =  " + AccountKit.isInitialized());
 		}
 		Log.d(LCAT, "isUIThread() = " + TiApplication.isUIThread());
+		// always false ;-(
+		Log.d(LCAT, "isInitialized =  " + AccountKit.isInitialized());
 		final Intent intent = new Intent(activity, AccountKitActivity.class);
 		// Initialization error: 501: The SDK has not been initialized, make
 		// sure to call AccountKit.initializeSdk() first
