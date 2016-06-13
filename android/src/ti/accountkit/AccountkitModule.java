@@ -35,7 +35,7 @@ public class AccountkitModule extends KrollModule implements
 
 	public AccountkitModule() {
 		super();
-		activity = TiApplication.getAppRootOrCurrentActivity();
+		// Log.d(LCAT, "ApplicationID=" + AccountKit.getApplicationId());
 
 	}
 
@@ -46,20 +46,26 @@ public class AccountkitModule extends KrollModule implements
 
 	@Kroll.method
 	public void initialize() {
-		Log.d(LCAT, "start initialize inside krollmethod");
-		if (AccountKit.isInitialized() == false) {
-			AccountKit.initialize(TiApplication.getInstance()
-					.getApplicationContext());
-			Log.d(LCAT, "isInitialized=" + AccountKit.isInitialized());
-		}
+		Log.d(LCAT, "start initialize inside krollmethod initialize()");
+		// The SDK has not been initialized, make sure to call
+		// AccountKit.initializeSdk() AccountKit has no method 'initialize !!!'
+		AccountKit.initialize(TiApplication.getInstance()
+				.getApplicationContext());
+		Log.d(LCAT, "isInitialized=" + AccountKit.isInitialized());
+		Log.d(LCAT,
+				AccountKit.APPLICATION_ID_PROPERTY + "="
+						+ AccountKit.getApplicationId());
+		Log.d(LCAT,
+				AccountKit.APPLICATION_NAME_PROPERTY + "="
+						+ AccountKit.getApplicationName());
+		Log.d(LCAT,
+				AccountKit.CLIENT_TOKEN_PROPERTY + "="
+						+ AccountKit.getClientToken());
 
 	}
 
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
-		AccountKit.initialize(TiApplication.getInstance()
-				.getApplicationContext());
-		Log.d(LCAT, "isInitialized=" + AccountKit.isInitialized());
 
 	}
 
@@ -68,7 +74,6 @@ public class AccountkitModule extends KrollModule implements
 		activity = TiApplication.getAppRootOrCurrentActivity();
 		Log.d(LCAT,
 				"TiApplication.isUIThread() = " + TiApplication.isUIThread());
-
 		if (!TiApplication.isUIThread()) {
 			TiMessenger.sendBlockingMainMessage(new Handler(TiMessenger
 					.getMainMessenger().getLooper(), new Handler.Callback() {
@@ -90,13 +95,8 @@ public class AccountkitModule extends KrollModule implements
 	}
 
 	private void loginWithPhone_forced_in_UIThread() {
-		if (false == AccountKit.isInitialized()) {
-			AccountKit.initialize(TiApplication.getInstance()
-					.getApplicationContext());
-		}
-		Log.d(LCAT, "isUIThread() = " + TiApplication.isUIThread());
-		// always false ;-(
 		Log.d(LCAT, "isInitialized =  " + AccountKit.isInitialized());
+		Log.d(LCAT, "isUIThread() = " + TiApplication.isUIThread());
 		final Intent intent = new Intent(activity, AccountKitActivity.class);
 		// Initialization error: 501: The SDK has not been initialized, make
 		// sure to call AccountKit.initializeSdk() first
