@@ -60,8 +60,7 @@ public class AccountkitModule extends KrollModule implements
 
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
-		AccountKit.initialize(TiApplication.getInstance()
-				.getApplicationContext());
+
 	}
 
 	@Kroll.method
@@ -94,15 +93,11 @@ public class AccountkitModule extends KrollModule implements
 		if (false == AccountKit.isInitialized()) {
 			AccountKit.initialize(TiApplication.getInstance()
 					.getApplicationContext());
-			Log.d(LCAT,
-					"Init inside krollmethod loginwithphone "
-							+ AccountKit.isInitialized());
+			// always false ;-(
+			Log.d(LCAT, "isInitialized =  " + AccountKit.isInitialized());
 		}
-		Log.d(LCAT,
-				"TiApplication.isUIThread() = " + TiApplication.isUIThread());
-
-		final Intent intent = new Intent(getActivity(),
-				AccountKitActivity.class);
+		Log.d(LCAT, "isUIThread() = " + TiApplication.isUIThread());
+		final Intent intent = new Intent(activity, AccountKitActivity.class);
 		// Initialization error: 501: The SDK has not been initialized, make
 		// sure to call AccountKit.initializeSdk() first
 		AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder = new AccountKitConfiguration.AccountKitConfigurationBuilder(
