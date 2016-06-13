@@ -31,6 +31,7 @@ private:
 	// Methods -----------------------------------------------------------
 	static v8::Handle<v8::Value> loginWithEmail(const v8::Arguments&);
 	static v8::Handle<v8::Value> loginWithPhone(const v8::Arguments&);
+	static v8::Handle<v8::Value> logout(const v8::Arguments&);
 	static v8::Handle<v8::Value> initialize(const v8::Arguments&);
 
 	// Dynamic property accessors ----------------------------------------

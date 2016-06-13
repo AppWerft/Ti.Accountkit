@@ -13,10 +13,12 @@
 			android:value="@string/ACCOUNT_KIT_CLIENT_TOKEN" />
 			<meta-data android:name="com.facebook.accountkit.ApplicationName"
 			android:value="@string/APP_NAME" />
-			<activity
+			<application>
+            <activity
 			android:name="com.facebook.accountkit.ui.AccountKitActivity"
-			android:theme="@style/AppLoginTheme"
+			
 			/>
+            </application> 
 
 		</manifest>
 	</android>

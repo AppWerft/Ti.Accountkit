@@ -90,6 +90,7 @@ Handle<FunctionTemplate> AccountkitModule::getProxyTemplate()
 	// Method bindings --------------------------------------------------------
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "loginWithEmail", AccountkitModule::loginWithEmail);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "loginWithPhone", AccountkitModule::loginWithPhone);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "logout", AccountkitModule::logout);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "initialize", AccountkitModule::initialize);
 
 	Local<ObjectTemplate> prototypeTemplate = proxyTemplate->PrototypeTemplate();
@@ -177,6 +178,49 @@ Handle<Value> AccountkitModule::loginWithPhone(const Arguments& args)
 		methodID = env->GetMethodID(AccountkitModule::javaClass, "loginWithPhone", "()V");
 		if (!methodID) {
 			const char *error = "Couldn't find proxy method 'loginWithPhone' with signature '()V'";
+			LOGE(TAG, error);
+				return titanium::JSException::Error(error);
+		}
+	}
+
+	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
+
+	jvalue* jArguments = 0;
+
+	jobject javaProxy = proxy->getJavaObject();
+	env->CallVoidMethodA(javaProxy, methodID, jArguments);
+
+	if (!JavaObject::useGlobalRefs) {
+		env->DeleteLocalRef(javaProxy);
+	}
+
+
+
+	if (env->ExceptionCheck()) {
+		titanium::JSException::fromJavaException();
+		env->ExceptionClear();
+	}
+
+
+
+
+	return v8::Undefined();
+
+}
+Handle<Value> AccountkitModule::logout(const Arguments& args)
+{
+	LOGD(TAG, "logout()");
+	HandleScope scope;
+
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		return titanium::JSException::GetJNIEnvironmentError();
+	}
+	static jmethodID methodID = NULL;
+	if (!methodID) {
+		methodID = env->GetMethodID(AccountkitModule::javaClass, "logout", "()V");
+		if (!methodID) {
+			const char *error = "Couldn't find proxy method 'logout' with signature '()V'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}

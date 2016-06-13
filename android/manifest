@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0.0
+version: 1.0.1
 apiversion: 2
 architectures: armeabi armeabi-v7a x86
 description: tiaccountkit
@@ -15,4 +15,4 @@ name: tiaccountkit
 moduleid: ti.accountkit
 guid: ceb74384-7281-48b6-b19f-18b85e3ee69b
 platform: android
-minsdk: 5.3.0.GA
+minsdk: 3.5.1.GA

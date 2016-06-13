@@ -3,12 +3,17 @@ package ti.accountkit;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.AsyncResult;
 import org.appcelerator.kroll.common.Log;
+import org.appcelerator.kroll.common.TiMessenger;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiActivityResultHandler;
+import org.appcelerator.titanium.util.TiConvert;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitLoginResult;
@@ -24,12 +29,14 @@ public class AccountkitModule extends KrollModule implements
 	public static final int RESPONSE_TYPE_AUTHORIZATION_CODE = 0;
 	@Kroll.constant
 	public static final int RESPONSE_TYPE_AUTHORIZATION_TOKEN = 1;
-
+	public static final int MSG_PHONE_LOGIN = 0;
 	Activity activity;
 	private static final String LCAT = "TiaccountkitModule";
 
 	public AccountkitModule() {
 		super();
+		activity = TiApplication.getAppRootOrCurrentActivity();
+
 	}
 
 	@Kroll.method
@@ -39,22 +46,65 @@ public class AccountkitModule extends KrollModule implements
 
 	@Kroll.method
 	public void initialize() {
-		activity = TiApplication.getAppRootOrCurrentActivity();
-		AccountKit.initialize(TiApplication.getInstance()
-				.getApplicationContext());
+		/*
+		 * Log.d(LCAT, "start initialize inside krollmethod"); if
+		 * (AccountKit.isInitialized() == false) { Log.d(LCAT,
+		 * "start initialize inside krollmethod after questio n if init");
+		 * activity = TiApplication.getAppRootOrCurrentActivity(); Log.d(LCAT,
+		 * "Kit initialized after question");
+		 * AccountKit.initialize(TiApplication.getInstance()
+		 * .getApplicationContext()); Log.d(LCAT, "isInitialized=" +
+		 * AccountKit.isInitialized()); }
+		 */
 	}
 
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
-		Log.d(LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is
-		// created
+		AccountKit.initialize(TiApplication.getInstance()
+				.getApplicationContext());
 	}
 
 	@Kroll.method
 	public void loginWithPhone() {
+		activity = TiApplication.getAppRootOrCurrentActivity();
+		Log.d(LCAT,
+				"TiApplication.isUIThread() = " + TiApplication.isUIThread());
+
+		if (!TiApplication.isUIThread()) {
+			TiMessenger.sendBlockingMainMessage(new Handler(TiMessenger
+					.getMainMessenger().getLooper(), new Handler.Callback() {
+				public boolean handleMessage(Message msg) {
+					switch (msg.what) {
+					case MSG_PHONE_LOGIN: {
+						AsyncResult result = (AsyncResult) msg.obj;
+						result.setResult(null);
+						loginWithPhone_forced_in_UIThread();
+						return true;
+					}
+					}
+					return false;
+				}
+			}).obtainMessage(MSG_PHONE_LOGIN));
+		} else {
+			loginWithPhone_forced_in_UIThread();
+		}
+	}
+
+	private void loginWithPhone_forced_in_UIThread() {
+		if (false == AccountKit.isInitialized()) {
+			AccountKit.initialize(TiApplication.getInstance()
+					.getApplicationContext());
+			Log.d(LCAT,
+					"Init inside krollmethod loginwithphone "
+							+ AccountKit.isInitialized());
+		}
+		Log.d(LCAT,
+				"TiApplication.isUIThread() = " + TiApplication.isUIThread());
+
 		final Intent intent = new Intent(getActivity(),
 				AccountKitActivity.class);
+		// Initialization error: 501: The SDK has not been initialized, make
+		// sure to call AccountKit.initializeSdk() first
 		AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder = new AccountKitConfiguration.AccountKitConfigurationBuilder(
 				LoginType.PHONE, AccountKitActivity.ResponseType.CODE); // or
 																		// .ResponseType.TOKEN
@@ -87,7 +137,6 @@ public class AccountkitModule extends KrollModule implements
 			final int resultCode, final Intent data) {
 		if (requestCode == APP_REQUEST_CODE && hasListeners("login")) {
 			KrollDict result = new KrollDict();
-
 			AccountKitLoginResult loginResult = data
 					.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
 			if (loginResult.getError() != null) {

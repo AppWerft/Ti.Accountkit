@@ -14,6 +14,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/fuerst/Documents/APPC_WORKSPACE/Ti.AccountKit/android/lib/facebook-account-kit-sdk-4-12-1.jar"/>
-	<classpathentry kind="lib" path="/Users/fuerst/Documents/APPC_WORKSPACE/Ti.AccountKit/android/lib/android-support-v7-appcompat.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
