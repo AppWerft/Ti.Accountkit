@@ -47,8 +47,10 @@ public class AccountkitModule extends KrollModule implements
 	@Kroll.method
 	public void initialize() {
 		Log.d(LCAT, "start initialize inside krollmethod initialize()");
-		// The SDK has not been initialized, make sure to call
+		// The SDK has not been initialized, make sure to call call
+		// AccountKit.initializeSdk() first
 		// AccountKit.initializeSdk() AccountKit has no method 'initialize !!!'
+		// https://stackoverflow.com/questions/37735350/unable-to-initialize-accountkit-android-studio-initialization-error-501
 		AccountKit.initialize(TiApplication.getInstance()
 				.getApplicationContext());
 		Log.d(LCAT, "isInitialized=" + AccountKit.isInitialized());
